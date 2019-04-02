@@ -6,13 +6,17 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import java.util.*;
 
 import java.util.ArrayList;
 
 public class DrawView extends View implements View.OnTouchListener {
     ArrayList<MyPoint> points = new ArrayList<MyPoint>();
+    Random random=new Random();
+    float radius;
 
     public DrawView(Context context) {
         super(context);
@@ -38,9 +42,10 @@ public class DrawView extends View implements View.OnTouchListener {
 
     protected void onDraw(Canvas canvas) {
         Paint paint = new Paint();
-        paint.setColor(Color.GREEN);
+
         for(MyPoint pt: points){
-            canvas.drawCircle(pt.x, pt.y, 50, paint);
+            paint.setColor(random.nextInt());
+            canvas.drawCircle(pt.x, pt.y,radius+5, paint);
         }
 
 
