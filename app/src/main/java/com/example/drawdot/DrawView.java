@@ -13,7 +13,7 @@ import java.util.*;
 
 import java.util.ArrayList;
 
-public class DrawView extends View implements View.OnTouchListener {
+public class DrawView extends View implements View.OnTouchListener, View.OnLongClickListener {
     ArrayList<MyPoint> points = new ArrayList<MyPoint>();
     Random random=new Random();
     float radius;
@@ -21,23 +21,26 @@ public class DrawView extends View implements View.OnTouchListener {
     public DrawView(Context context) {
         super(context);
         setOnTouchListener(this);
+        setOnLongClickListener(this);
     }
 
     public DrawView(Context context, AttributeSet attrs) {
         super(context, attrs);
         setOnTouchListener(this);
+        setOnLongClickListener(this);
     }
 
     public DrawView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         setOnTouchListener(this);
+        setOnLongClickListener(this);
     }
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {
         points.add(new MyPoint(event.getX(),event.getY()));
         invalidate();
-        return true;
+        return false;
     }
 
     protected void onDraw(Canvas canvas) {
@@ -49,5 +52,12 @@ public class DrawView extends View implements View.OnTouchListener {
         }
 
 
+    }
+
+    @Override
+    public boolean onLongClick(View v) {
+        radius=50;
+        //invalidate();
+        return true;
     }
 }
