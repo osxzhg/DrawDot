@@ -10,6 +10,9 @@ import android.util.Log;
 import android.widget.Button;
 import android.widget.SeekBar;
 
+import java.time.LocalDateTime;
+import java.util.LinkedList;
+
 public class MainActivity extends AppCompatActivity {
 
     @Override
@@ -19,7 +22,8 @@ public class MainActivity extends AppCompatActivity {
 
         final DrawView drawView = findViewById(R.id.view2);
         final SeekBar seekBar = (SeekBar) findViewById(R.id.seekBar3);
-
+        final LinkedList<String> words = new LinkedList<String>();
+        final LinkedList<Long> myTime = new LinkedList<Long>();
 
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -49,6 +53,54 @@ public class MainActivity extends AppCompatActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             btn.setBackground(gd);
         }
+
+        Thread consumer = new Thread("Consumer") // This example only includes one consumer but there could be more
+        {
+            public void run()
+            {
+                while(true) // yes run forever
+                {
+                    synchronized(words)
+                    {
+                        if(words.isEmpty())
+                        {
+                            try
+                            {
+                                Log.d("myd","wait");
+                                words.wait(); // signal that the list is empty and that this thread needs to block
+                            } catch (InterruptedException e)
+                            {
+                                e.printStackTrace();
+                            }
+                            Log.d("myd","isAwake");
+                        }
+                        else
+                        {
+                            Log.d("myd",words.removeFirst());
+                        }
+                    }
+                }
+
+
+            }
+        };
+        long ctime=System.currentTimeMillis();
+        myTime.add(ctime);
+        Log.d("myd",Long.toString(myTime.removeFirst()));
+        consumer.start();
+        int i;
+        String inputData;
+        for(i=0;i<10;i++){
+           inputData="hello"+Integer.toString(i);
+            synchronized(words)
+            {
+                words.add(inputData);
+                words.notify(); // signal that we have added some data to our list
+            }
+
+        }
+
+
 
     }
 }
