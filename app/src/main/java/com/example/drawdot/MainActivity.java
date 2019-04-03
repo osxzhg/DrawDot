@@ -1,5 +1,8 @@
 package com.example.drawdot;
 
+import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
+import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.method.Touch;
@@ -36,5 +39,16 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+
+        Button btn = (Button) findViewById(R.id.button_redo);
+        //int[] colors = {Color.parseColor("#008000"),Color.parseColor("#ADFF2F")};
+        int[] colors = {Color.parseColor("#CC0000"),Color.parseColor("#FF0000")};
+        //create a new gradient color
+        GradientDrawable gd = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,colors);
+        gd.setCornerRadius(0f);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            btn.setBackground(gd);
+        }
+
     }
 }
