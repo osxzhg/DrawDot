@@ -3,14 +3,13 @@ package com.example.drawdot;
 import android.graphics.PointF;
 
 public class MyPoint {
-    float x;
-    float y;
-    float size;
+    PointF pt;
+    float radius;
     int color;
     int StepNum;
     int id;
-    public MyPoint(float x, float y){
-        this.x = x;
-        this.y=y;
+    public MyPoint(PointF pt,float radius){
+        this.pt=pt;
+        this.radius=radius;
     }
 }
