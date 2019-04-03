@@ -20,7 +20,11 @@ public class DrawView extends View implements View.OnTouchListener, View.OnLongC
     ArrayList<MyPoint> points = new ArrayList<MyPoint>();
     Random random=new Random();
     float radius;
-    boolean israndom = true;
+    boolean israndom = false;
+    boolean isActDown = false;
+    boolean isActMove = false;
+    boolean isActUp = false;
+    boolean isLongPress=true;
     int color=10;
 
     public DrawView(Context context) {
@@ -45,9 +49,34 @@ public class DrawView extends View implements View.OnTouchListener, View.OnLongC
     public boolean onTouch(View v, MotionEvent event) {
         PointF pointF = new PointF();
         pointF.set(event.getX(),event.getY());
-        points.add(new MyPoint(pointF,radius));
-        invalidate();
-        return false;
+
+
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                isActDown = true;
+                isActMove = false;
+                isActUp = false;
+                points.add(new MyPoint(pointF,radius));
+                break;
+            case MotionEvent.ACTION_MOVE:
+                isActMove = true;
+                points.add(new MyPoint(pointF,radius));
+                invalidate();
+                break;
+            case MotionEvent.ACTION_UP:
+                isActUp = true;
+                if(isLongPress){
+                    points.remove(points.size()-1);
+                }
+                else if(!isActMove){
+                    invalidate();
+                }
+                break;
+            default:
+                return false;
+        }
+
+        return true;
     }
 
     protected void onDraw(Canvas canvas) {
