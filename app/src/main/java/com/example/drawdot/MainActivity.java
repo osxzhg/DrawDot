@@ -81,6 +81,9 @@ public class MainActivity extends AppCompatActivity {
                             if( (System.currentTimeMillis()-myTime.getFirst()) > 5000 ){
                                 Log.d("myd","ok");
                             }
+                            else{
+                                Log.d("myd","less than 5000");
+                            }
 
                         }
                     }
