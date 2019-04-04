@@ -10,6 +10,7 @@ import android.util.Log;
 import android.widget.Button;
 import android.widget.SeekBar;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.LinkedList;
 
@@ -21,9 +22,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         final DrawView drawView = findViewById(R.id.view2);
-        final SeekBar seekBar = (SeekBar) findViewById(R.id.seekBar3);
-        final LinkedList<String> words = new LinkedList<String>();
-        final LinkedList<Long> myTime = new LinkedList<Long>();
+        final SeekBar seekBar = findViewById(R.id.seekBar3);
+        final LinkedList<String> words = new LinkedList<>();
+        final LinkedList<Long> myTime = new LinkedList<>();
 
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -44,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        Button btn = (Button) findViewById(R.id.button_redo);
+        Button btn =findViewById(R.id.button_redo);
         //int[] colors = {Color.parseColor("#008000"),Color.parseColor("#ADFF2F")};
         int[] colors = {Color.parseColor("#CC0000"),Color.parseColor("#FF0000")};
         //create a new gradient color
@@ -60,14 +61,14 @@ public class MainActivity extends AppCompatActivity {
             {
                 while(true) // yes run forever
                 {
-                    synchronized(words)
+                    synchronized(myTime)
                     {
-                        if(words.isEmpty())
+                        if(myTime.isEmpty())
                         {
                             try
                             {
                                 Log.d("myd","wait");
-                                words.wait(); // signal that the list is empty and that this thread needs to block
+                                myTime.wait(); // signal that the list is empty and that this thread needs to block
                             } catch (InterruptedException e)
                             {
                                 e.printStackTrace();
@@ -76,7 +77,11 @@ public class MainActivity extends AppCompatActivity {
                         }
                         else
                         {
-                            Log.d("myd",words.removeFirst());
+                            Log.d("myd","bf");
+                            if( (System.currentTimeMillis()-myTime.getFirst()) > 5000 ){
+                                Log.d("myd","ok");
+                            }
+
                         }
                     }
                 }
@@ -85,20 +90,15 @@ public class MainActivity extends AppCompatActivity {
             }
         };
         long ctime=System.currentTimeMillis();
-        myTime.add(ctime);
-        Log.d("myd",Long.toString(myTime.removeFirst()));
-        consumer.start();
-        int i;
-        String inputData;
-        for(i=0;i<10;i++){
-           inputData="hello"+Integer.toString(i);
-            synchronized(words)
-            {
-                words.add(inputData);
-                words.notify(); // signal that we have added some data to our list
-            }
 
+        synchronized(myTime) {
+            myTime.add(ctime);
+            myTime.notify();
         }
+
+        consumer.start();
+
+
 
 
 
