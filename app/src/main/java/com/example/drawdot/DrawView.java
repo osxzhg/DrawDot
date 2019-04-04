@@ -20,29 +20,76 @@ public class DrawView extends View implements View.OnTouchListener, View.OnLongC
     ArrayList<MyPoint> points = new ArrayList<MyPoint>();
     Random random=new Random();
     float radius;
-    boolean israndom = false;
+    final LinkedList<Long> myTime = new LinkedList<>();
+    boolean israndom = true;
     boolean isActDown = false;
     boolean isActMove = false;
     boolean isActUp = false;
-    boolean isLongPress=true;
+    boolean isLongPress=false;
     int color=10;
+
+    Thread consumer = new Thread("Consumer") // This example only includes one consumer but there could be more
+    {
+        public void run()
+        {
+            while(true) // yes run forever
+            {
+                synchronized(myTime)
+                {
+                    if(myTime.isEmpty())
+                    {
+                        try
+                        {
+                            Log.d("myd","wait");
+                            myTime.wait(); // signal that the list is empty and that this thread needs to block
+                        } catch (InterruptedException e)
+                        {
+                            e.printStackTrace();
+                        }
+                        Log.d("myd","isAwake");
+                    }
+                    else
+                    {
+                        if( (System.currentTimeMillis()-myTime.getFirst()) > 2000 ){
+                            Log.d("myd","ok");
+                            isLongPress=true;
+                        }
+                        else{
+                            Log.d("myd","less than 100");
+                        }
+
+                    }
+                }
+             try{
+                Thread.currentThread().sleep(1000);
+             }catch(InterruptedException ie){
+                 ie.printStackTrace(); }
+
+            }
+
+
+        }
+    };
 
     public DrawView(Context context) {
         super(context);
         setOnTouchListener(this);
         setOnLongClickListener(this);
+        consumer.start();
     }
 
     public DrawView(Context context, AttributeSet attrs) {
         super(context, attrs);
         setOnTouchListener(this);
         setOnLongClickListener(this);
+        consumer.start();
     }
 
     public DrawView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         setOnTouchListener(this);
         setOnLongClickListener(this);
+        consumer.start();
     }
 
     @Override
@@ -57,18 +104,33 @@ public class DrawView extends View implements View.OnTouchListener, View.OnLongC
                 isActMove = false;
                 isActUp = false;
                 points.add(new MyPoint(pointF,radius));
+
+                synchronized(myTime) {
+                    myTime.add(System.currentTimeMillis());
+                    myTime.notify();
+                }
                 break;
             case MotionEvent.ACTION_MOVE:
                 isActMove = true;
                 points.add(new MyPoint(pointF,radius));
+/*                synchronized(myTime) {
+                    myTime.removeFirst();
+                }*/
                 invalidate();
                 break;
             case MotionEvent.ACTION_UP:
                 isActUp = true;
+                isActDown = false;
+                synchronized(myTime) {
+                    myTime.removeFirst();
+                }
+                Log.d("myd", String.valueOf(isLongPress));
                 if(isLongPress){
                     points.remove(points.size()-1);
+                    isLongPress=false;
                 }
                 else if(!isActMove){
+                    Log.d("myd", String.valueOf(isActMove));
                     invalidate();
                 }
                 break;
@@ -98,4 +160,8 @@ public class DrawView extends View implements View.OnTouchListener, View.OnLongC
         //invalidate();
         return true;
     }
+
+
+
+
 }
