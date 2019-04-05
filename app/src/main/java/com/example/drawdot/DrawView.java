@@ -32,10 +32,12 @@ public class DrawView extends View implements View.OnTouchListener, View.OnLongC
     int color=10;
     int[] colorList ={Color.BLACK, Color.BLUE ,Color.CYAN, Color.DKGRAY,Color.GRAY,Color.GREEN,
             Color.LTGRAY,Color.MAGENTA,Color.RED,Color.TRANSPARENT, Color.WHITE,Color.YELLOW};
+
     int colorIndext = 0;
 
     Thread consumer = new Thread("Consumer") // This example only includes one consumer but there could be more
     {
+        int ntime;
         public void run()
         {
             while(true) // yes run forever
@@ -56,20 +58,27 @@ public class DrawView extends View implements View.OnTouchListener, View.OnLongC
                     }
                     else
                     {
-                        if( (System.currentTimeMillis()-myTime.getFirst()) > 2000 ){
+                        //Log.d("myd","ok");
+                        if( (System.currentTimeMillis()-myTime.getFirst()) > 1000 ){
                             Log.d("myd","ok");
                             isLongPress=true;
+                            ntime=(int) (System.currentTimeMillis()-myTime.getFirst())/1000 % colorList.length;
+                            if(ntime!=colorIndext && !isActMove){
+                                colorIndext = ntime;
+                                Log.d("myd",Integer.toString(ntime));
+                                invalidate();
+                            }
                         }
+                        /*
                         else{
                             Log.d("myd","less than 100");
-                        }
+                        }*/
+
+
 
                     }
                 }
-             try{
-                Thread.currentThread().sleep(1000);
-             }catch(InterruptedException ie){
-                 ie.printStackTrace(); }
+
 
             }
 
@@ -117,9 +126,11 @@ public class DrawView extends View implements View.OnTouchListener, View.OnLongC
                 } else {
                     points.add(new MyPoint(pointF, radius, colorList[colorIndext]));
                 }
-                synchronized(myTime) {
-                    myTime.add(System.currentTimeMillis());
-                    myTime.notify();
+                if(isSingleColor) {
+                    synchronized (myTime) {
+                        myTime.add(System.currentTimeMillis());
+                        myTime.notify();
+                    }
                 }
                 break;
             case MotionEvent.ACTION_MOVE:
@@ -137,16 +148,18 @@ public class DrawView extends View implements View.OnTouchListener, View.OnLongC
             case MotionEvent.ACTION_UP:
                 isActUp = true;
                 isActDown = false;
-                synchronized(myTime) {
-                    myTime.removeFirst();
+                if( isSingleColor) {
+                    synchronized (myTime) {
+                        myTime.removeFirst();
+                    }
                 }
-                Log.d("myd", String.valueOf(isLongPress));
+                //Log.d("myd", String.valueOf(isLongPress));
                 if(isLongPress){
                     points.remove(points.size()-1);
                     isLongPress=false;
                 }
                 else if(!isActMove){
-                    Log.d("myd", String.valueOf(isActMove));
+                //    Log.d("myd", String.valueOf(isActMove));
                     invalidate();
                 }
                 break;
@@ -162,6 +175,9 @@ public class DrawView extends View implements View.OnTouchListener, View.OnLongC
         Paint paint = new Paint();
         for(MyPoint point: points){
             paint.setColor(point.color);
+            if(isLongPress && !isActMove){
+                paint.setColor(colorList[colorIndext]);
+            }
             canvas.drawCircle(point.pt.x, point.pt.y,point.radius+5, paint);
         }
 
