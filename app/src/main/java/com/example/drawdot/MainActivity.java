@@ -1,6 +1,10 @@
 package com.example.drawdot;
 
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.ColorFilter;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
@@ -27,6 +31,19 @@ public class MainActivity extends AppCompatActivity {
         final Button statusButton = findViewById(R.id.button_status);
         final LinkedList<String> words = new LinkedList<>();
 
+        statusButton.setBackgroundColor(Color.GREEN);
+        int[] colors = {drawView.colorList[drawView.colorIndext],drawView.colorList[drawView.colorIndext]};
+        //create a new gradient color
+
+        //ColorDrawable colorDrawable = new ColorDrawable(drawView.colorList[drawView.colorIndext]);
+        //statusButton.setBackground(colorDrawable);
+        //statusButton.setBackgroundColor(Color.GREEN);
+        /*
+        GradientDrawable gd = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,colors);
+        gd.setCornerRadius(0f);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            statusButton.setBackground(gd);
+        }*/
 
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -53,14 +70,17 @@ public class MainActivity extends AppCompatActivity {
                     drawView.isSingleColor=false;
                     drawView.isCircleColor=true;
                     drawView.israndom=false;
+                    statusButton.setBackgroundColor(Color.RED);
                 } else if(drawView.isCircleColor==true) {
                     drawView.isSingleColor=false;
                     drawView.isCircleColor=false;
                     drawView.israndom=true;
+                    statusButton.setBackgroundColor(Color.YELLOW);
                 } else {
                     drawView.isSingleColor=true;
                     drawView.isCircleColor=false;
                     drawView.israndom=false;
+                    statusButton.setBackgroundColor(Color.GREEN);
                 }
             }
         });
