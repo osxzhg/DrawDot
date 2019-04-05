@@ -29,6 +29,8 @@ public class MainActivity extends AppCompatActivity {
         final DrawView drawView = findViewById(R.id.view2);
         final SeekBar seekBar = findViewById(R.id.seekBar3);
         final Button statusButton = findViewById(R.id.button_status);
+        final Button redoButton = findViewById(R.id.button_redo);
+        final Button undoButton = findViewById(R.id.button_undo);
         final LinkedList<String> words = new LinkedList<>();
 
         statusButton.setBackgroundColor(Color.GREEN);
@@ -66,12 +68,12 @@ public class MainActivity extends AppCompatActivity {
         statusButton.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(drawView.isSingleColor==true){
+                if(drawView.isSingleColor){
                     drawView.isSingleColor=false;
                     drawView.isCircleColor=true;
                     drawView.israndom=false;
                     statusButton.setBackgroundColor(Color.RED);
-                } else if(drawView.isCircleColor==true) {
+                } else if(drawView.isCircleColor) {
                     drawView.isSingleColor=false;
                     drawView.isCircleColor=false;
                     drawView.israndom=true;
@@ -84,6 +86,26 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+
+        undoButton.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(drawView.currentStep>=1 && drawView.maxStep - drawView.currentStep<10) {
+                    drawView.currentStep--;
+                }
+                drawView.invalidate();
+            }
+        });
+        redoButton.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(drawView.currentStep<drawView.maxStep) {
+                    drawView.currentStep++;
+                }
+                drawView.invalidate();
+            }
+        });
+
 /*
         Button btn =findViewById(R.id.button_redo);
         //int[] colors = {Color.parseColor("#008000"),Color.parseColor("#ADFF2F")};
