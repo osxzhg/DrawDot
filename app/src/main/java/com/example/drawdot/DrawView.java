@@ -23,7 +23,7 @@ public class DrawView extends View implements View.OnTouchListener, View.OnLongC
     float radius;
     final LinkedList<Long> myTime = new LinkedList<>();
     boolean israndom = false;
-    boolean isSingleColor = false;
+    boolean isSingleColor = true;
     boolean isCircleColor = false;
     boolean isActDown = false;
     boolean isActMove = false;

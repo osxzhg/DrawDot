@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.method.Touch;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.SeekBar;
 
@@ -23,6 +24,7 @@ public class MainActivity extends AppCompatActivity {
 
         final DrawView drawView = findViewById(R.id.view2);
         final SeekBar seekBar = findViewById(R.id.seekBar3);
+        final Button statusButton = findViewById(R.id.button_status);
         final LinkedList<String> words = new LinkedList<>();
 
 
@@ -42,6 +44,24 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
 
+            }
+        });
+        statusButton.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(drawView.isSingleColor==true){
+                    drawView.isSingleColor=false;
+                    drawView.isCircleColor=true;
+                    drawView.israndom=false;
+                } else if(drawView.isCircleColor==true) {
+                    drawView.isSingleColor=false;
+                    drawView.isCircleColor=false;
+                    drawView.israndom=true;
+                } else {
+                    drawView.isSingleColor=true;
+                    drawView.isCircleColor=false;
+                    drawView.israndom=false;
+                }
             }
         });
 /*
