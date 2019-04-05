@@ -34,6 +34,8 @@ public class DrawView extends View implements View.OnTouchListener, View.OnLongC
             Color.LTGRAY,Color.MAGENTA,Color.RED,Color.TRANSPARENT, Color.WHITE,Color.YELLOW};
 
     int colorIndext = 0;
+    int currentStep = 0;
+    int maxStep = 0;
 
     Thread consumer = new Thread("Consumer") // This example only includes one consumer but there could be more
     {
@@ -118,13 +120,14 @@ public class DrawView extends View implements View.OnTouchListener, View.OnLongC
                 isActDown = true;
                 isActMove = false;
                 isActUp = false;
+                currentStep++;
                 if(israndom){
-                    points.add(new MyPoint(pointF, radius, random.nextInt()));
+                    points.add(new MyPoint(pointF, radius, random.nextInt(),currentStep));
                 } else if(isCircleColor){
                     colorIndext = (colorIndext +1 )% colorList.length;
-                    points.add(new MyPoint(pointF, radius, colorList[colorIndext]));
+                    points.add(new MyPoint(pointF, radius, colorList[colorIndext],currentStep));
                 } else {
-                    points.add(new MyPoint(pointF, radius, colorList[colorIndext]));
+                    points.add(new MyPoint(pointF, radius, colorList[colorIndext],currentStep));
                 }
                 if(isSingleColor) {
                     synchronized (myTime) {
@@ -136,9 +139,9 @@ public class DrawView extends View implements View.OnTouchListener, View.OnLongC
             case MotionEvent.ACTION_MOVE:
                 isActMove = true;
                 if(israndom){
-                    points.add(new MyPoint(pointF, radius, random.nextInt()));
+                    points.add(new MyPoint(pointF, radius, random.nextInt(),currentStep));
                 } else {
-                    points.add(new MyPoint(pointF, radius, colorList[colorIndext]));
+                    points.add(new MyPoint(pointF, radius, colorList[colorIndext],currentStep));
                 }
 /*                synchronized(myTime) {
                     myTime.removeFirst();
@@ -178,7 +181,10 @@ public class DrawView extends View implements View.OnTouchListener, View.OnLongC
             if(isLongPress && !isActMove){
                 paint.setColor(colorList[colorIndext]);
             }
-            canvas.drawCircle(point.pt.x, point.pt.y,point.radius+5, paint);
+            if(point.getStepnumber()<=currentStep){
+                canvas.drawCircle(point.pt.x, point.pt.y,point.radius+5, paint);
+            }
+
         }
 
 
