@@ -111,20 +111,21 @@ public class DrawView extends View implements View.OnTouchListener, View.OnLongC
         setOnLongClickListener(this);
         consumer.start();
     }
-
+    int count=0;
     @Override
     public boolean onTouch(View v, MotionEvent event) {
-        PointF pointF = new PointF();
-        pointF.set(event.getX(),event.getY());
-        pointF.length();
-        int fingers=event.getPointerCount();
 
+        PointF pointF = new PointF();
+        /*pointF.set(event.getX(),event.getY());
+        pointF.length(); */
+        int fingers=event.getPointerCount();
+        Log.d("fingers","ontouch "+Integer.toString(++count)+" "+Integer.toString(fingers));
 
 
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                Log.d("fingers","down"+Integer.toString(fingers));
+                Log.d("fingers","down "+Integer.toString(count)+" "+Integer.toString(fingers));
                 isActDown = true;
                 isActMove = false;
                 isActUp = false;
@@ -145,8 +146,9 @@ public class DrawView extends View implements View.OnTouchListener, View.OnLongC
                 }
                 break;
             case MotionEvent.ACTION_MOVE:
+                Log.d("fingers","move "+Integer.toString(count)+" "+Integer.toString(fingers));
                 isActMove = true;
-                Log.d("fingers","move"+Integer.toString(fingers));
+                //Log.d("fingers","move"+Integer.toString(fingers));
                 if(israndom){
                     for(int i=0;i<fingers;i++){
                         pointF.set(event.getX(i),event.getY(i));
@@ -163,7 +165,8 @@ public class DrawView extends View implements View.OnTouchListener, View.OnLongC
                 invalidate();
                 break;
             case MotionEvent.ACTION_UP:
-                Log.d("fingers","up"+Integer.toString(fingers));
+                Log.d("fingers","up "+Integer.toString(count)+" "+Integer.toString(fingers));
+                //Log.d("fingers","up"+Integer.toString(fingers));
                 isActUp = true;
                 isActDown = false;
                 if( isSingleColor) {
@@ -171,8 +174,8 @@ public class DrawView extends View implements View.OnTouchListener, View.OnLongC
                         myTime.removeFirst();
                     }
                 }
-                Log.d("myd",Integer.toString(currentStep));
-                Log.d("myd",Boolean.toString(isLongPress));
+                //Log.d("myd",Integer.toString(currentStep));
+               // Log.d("myd",Boolean.toString(isLongPress));
                 //Log.d("myd", String.valueOf(isLongPress));
                 if(isLongPress){
                     points.remove(points.size()-1);
@@ -186,11 +189,20 @@ public class DrawView extends View implements View.OnTouchListener, View.OnLongC
                 }
                 maxStep=currentStep;
                 break;
-            default:
-                Log.d("fingers","default"+Integer.toString(fingers));
+            case MotionEvent.ACTION_POINTER_DOWN:
                 for(int i=0;i<fingers;i++){
-                    pointF.set(event.getX(i),event.getY(i));
-                    points.add(new MyPoint(pointF, radius, colorList[colorIndext], currentStep));
+                    //pointF.set(event.getX(i),event.getY(i));
+                    //points.add(new MyPoint(pointF, radius, colorList[colorIndext], currentStep));
+                    Log.d("pdown","count"+ Integer.toString(count)+Float.toString(event.getX(i))+":"+Float.toString(event.getY(i)));
+                }
+                break;
+            default:
+                Log.d("fingers","default "+Integer.toString(count)+" "+Integer.toString(fingers));
+                //Log.d("fingers","default"+Integer.toString(fingers));
+                for(int i=0;i<fingers;i++){
+                    //pointF.set(event.getX(i),event.getY(i));
+                    //points.add(new MyPoint(pointF, radius, colorList[colorIndext], currentStep));
+                    Log.d("default",Float.toString(event.getX(i))+":"+Float.toString(event.getY(i)));
                 }
                 invalidate();
                 return false;
