@@ -17,16 +17,22 @@ import java.util.*;
 import java.util.ArrayList;
 
 public class DrawView extends View implements View.OnTouchListener, View.OnLongClickListener {
-    ArrayList<MyPoint> points = new ArrayList<MyPoint>();
+    ArrayList<MyPoint> points = new ArrayList<>();
+
     Random random=new Random();
     float radius;
     final LinkedList<Long> myTime = new LinkedList<>();
-    boolean israndom = true;
+    boolean israndom = false;
+    boolean isSingleColor = false;
+    boolean isCircleColor = false;
     boolean isActDown = false;
     boolean isActMove = false;
     boolean isActUp = false;
     boolean isLongPress=false;
     int color=10;
+    int[] colorList ={Color.BLACK, Color.BLUE ,Color.CYAN, Color.DKGRAY,Color.GRAY,Color.GREEN,
+            Color.LTGRAY,Color.MAGENTA,Color.RED,Color.TRANSPARENT, Color.WHITE,Color.YELLOW};
+    int colorIndext = 0;
 
     Thread consumer = new Thread("Consumer") // This example only includes one consumer but there could be more
     {
@@ -103,8 +109,14 @@ public class DrawView extends View implements View.OnTouchListener, View.OnLongC
                 isActDown = true;
                 isActMove = false;
                 isActUp = false;
-                points.add(new MyPoint(pointF,radius));
-
+                if(israndom){
+                    points.add(new MyPoint(pointF, radius, random.nextInt()));
+                } else if(isCircleColor){
+                    colorIndext = (colorIndext +1 )% colorList.length;
+                    points.add(new MyPoint(pointF, radius, colorList[colorIndext]));
+                } else {
+                    points.add(new MyPoint(pointF, radius, colorList[colorIndext]));
+                }
                 synchronized(myTime) {
                     myTime.add(System.currentTimeMillis());
                     myTime.notify();
@@ -112,7 +124,11 @@ public class DrawView extends View implements View.OnTouchListener, View.OnLongC
                 break;
             case MotionEvent.ACTION_MOVE:
                 isActMove = true;
-                points.add(new MyPoint(pointF,radius));
+                if(israndom){
+                    points.add(new MyPoint(pointF, radius, random.nextInt()));
+                } else {
+                    points.add(new MyPoint(pointF, radius, colorList[colorIndext]));
+                }
 /*                synchronized(myTime) {
                     myTime.removeFirst();
                 }*/
@@ -142,12 +158,10 @@ public class DrawView extends View implements View.OnTouchListener, View.OnLongC
     }
 
     protected void onDraw(Canvas canvas) {
-        Paint paint = new Paint();
 
+        Paint paint = new Paint();
         for(MyPoint point: points){
-            if(israndom){
-                paint.setColor(random.nextInt());
-            }
+            paint.setColor(point.color);
             canvas.drawCircle(point.pt.x, point.pt.y,point.radius+5, paint);
         }
 
