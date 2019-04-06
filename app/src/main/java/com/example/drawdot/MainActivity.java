@@ -117,6 +117,11 @@ public class MainActivity extends AppCompatActivity {
             btn.setBackground(gd);
         }
 */
+         /*while(true){
+
+             statusButton.setBackgroundColor(drawView.colorList[drawView.colorIndext]);
+        }
+*/
 
 
 

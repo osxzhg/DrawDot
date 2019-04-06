@@ -3,7 +3,8 @@ package com.example.drawdot;
 import android.graphics.PointF;
 
 public class MyPoint {
-    PointF pt;
+    float x;
+    float y;
     float radius;
     int color;
     private int stepnumber;
@@ -16,8 +17,9 @@ public class MyPoint {
         return this.stepnumber;
     }
 
-    public MyPoint(PointF pt, float radius, int color,int stepnumber){
-        this.pt=pt;
+    public MyPoint(float x, float y, float radius, int color,int stepnumber){
+        this.x=x;
+        this.y=y;
         this.radius=radius;
         this.color=color;
         this.stepnumber=stepnumber;
