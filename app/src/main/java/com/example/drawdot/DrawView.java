@@ -169,6 +169,7 @@ public class DrawView extends View implements View.OnTouchListener, View.OnLongC
                             points.add(new MyPoint(event.getX(), event.getY(), radius,colorList[colorIndext] , currentStep));
                         }
                     }else {
+                        isActMove=true;
                         for(int i=0;i<fingers;i++){
                             Log.d("fingers","move"+Integer.toString(count)+ " x:" + event.getX(i) + ", " + "y:" + event.getY(i));
                             points.add(new MyPoint(event.getX(i),event.getY(i), radius, colorList[colorIndext], currentStep));
