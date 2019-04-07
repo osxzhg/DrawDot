@@ -32,7 +32,7 @@ public class DrawView extends View implements View.OnTouchListener, View.OnLongC
     boolean isLongPress=false;
     int color=10;
     int[] colorList ={Color.BLACK, Color.BLUE ,Color.CYAN, Color.DKGRAY,Color.GRAY,Color.GREEN,
-            Color.LTGRAY,Color.MAGENTA,Color.RED,Color.TRANSPARENT, Color.WHITE,Color.YELLOW};
+            Color.LTGRAY,Color.MAGENTA,Color.RED,Color.YELLOW};
 
     int colorIndext = 0;
     int currentStep = 0;
@@ -72,7 +72,7 @@ public class DrawView extends View implements View.OnTouchListener, View.OnLongC
                             if(ntime!=colorIndext && !isActMove){
                                 colorIndext = ntime;
                                 //isLongPress=true;
-                                Log.d("myd",Integer.toString(ntime));
+                                Log.d("ntime",Integer.toString(colorIndext));
                                 invalidate();
                             }
 
@@ -174,6 +174,8 @@ public class DrawView extends View implements View.OnTouchListener, View.OnLongC
                             points.add(new MyPoint(event.getX(i),event.getY(i), radius, colorList[colorIndext], currentStep));
                         }
                     }
+                }else {
+                    isActMove=true;
                 }
                 //Log.d("myd","distance:"+Float.toString(distance)+","+Boolean.toString(isActMove));
                 //Log.d("fingers","move"+Integer.toString(fingers));
@@ -220,10 +222,9 @@ public class DrawView extends View implements View.OnTouchListener, View.OnLongC
                 }
                 else if(!isActMove){
                 //    Log.d("myd", String.valueOf(isActMove));
-                    for(int i=0;i<fingers;i++){
-                        Log.d("fingers","up"+Integer.toString(count)+ " x:" + event.getX(i) + ", " + "y:" + event.getY(i));
-                        points.add(new MyPoint(event.getX(i),event.getY(i), radius, colorList[colorIndext], currentStep));
-                    }
+
+                        Log.d("fingers","up"+Integer.toString(count)+ " x:" + event.getX() + ", " + "y:" + event.getY());
+                        points.add(new MyPoint(event.getX(),event.getY(), radius, colorList[colorIndext], currentStep));
                     invalidate();
                 }
                 maxStep=currentStep;
@@ -242,6 +243,13 @@ public class DrawView extends View implements View.OnTouchListener, View.OnLongC
                     //pointF.set(event.getX(i),event.getY(i));
                     //points.add(new MyPoint(pointF, radius, colorList[colorIndext], currentStep));
                     Log.d("fingers","pup"+Integer.toString(count)+" x:" + event.getX(i)+", "+"y:"+event.getY(i));
+                    if(israndom){
+                        color=random.nextInt();
+                    }else {
+                        color=colorList[colorIndext];
+                    }
+
+                    points.add(new MyPoint(event.getX(i),event.getY(i), radius, color, currentStep));
                 }
                 break;
 
