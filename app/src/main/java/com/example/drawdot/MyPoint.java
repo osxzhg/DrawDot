@@ -1,23 +1,21 @@
 package com.example.drawdot;
 
-import android.graphics.PointF;
 
-public class MyPoint {
-    float x;
+class MyPoint {
+    float x; //coordinate of x and y
     float y;
-    float radius;
-    int color;
+    float radius; //radius of the circle
+    private int color;
     private int stepnumber;
-    int id;
 
-    public void setColor(int color) {
-        this.color = color;
+    int getColor() {
+        return this.color ;
     }
-    public int getStepnumber(){
+    int getStepnumber(){
         return this.stepnumber;
     }
 
-    public MyPoint(float x, float y, float radius, int color,int stepnumber){
+    MyPoint(float x, float y, float radius, int color,int stepnumber){
         this.x=x;
         this.y=y;
         this.radius=radius;

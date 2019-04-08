@@ -18,7 +18,7 @@ import java.util.*;
 
 import java.util.ArrayList;
 
-public class DrawView extends View implements View.OnTouchListener, View.OnLongClickListener {
+public class DrawView extends View implements View.OnTouchListener {
     ArrayList<MyPoint> points = new ArrayList<>();
     Random random=new Random();
     float radius;
@@ -39,6 +39,8 @@ public class DrawView extends View implements View.OnTouchListener, View.OnLongC
     int maxStep = 0;
     float xActDown=0; // the x of action down
     float yActDown=0; // the y of action down
+
+    Paint paint = new Paint();
 
     Thread consumer = new Thread("Consumer") // This example only includes one consumer but there could be more
     {
@@ -63,16 +65,13 @@ public class DrawView extends View implements View.OnTouchListener, View.OnLongC
                     }
                     else
                     {
-                        //Log.d("myd","ok");
+                        //if fingerdown lasts more than 1 second
                         if( (System.currentTimeMillis()-myTime.getFirst()) > 1000 ){
-                            Log.d("myd","ok");
                             isLongPress=true;
                             ntime=(int) (System.currentTimeMillis()-myTime.getFirst())/1000 % colorList.length;
                             // not move from on touch , change color every second
                             if(ntime!=colorIndext && !isActMove){
                                 colorIndext = ntime;
-                                //isLongPress=true;
-                                Log.d("ntime",Integer.toString(colorIndext));
                                 invalidate();
                             }
 
@@ -97,21 +96,18 @@ public class DrawView extends View implements View.OnTouchListener, View.OnLongC
     public DrawView(Context context) {
         super(context);
         setOnTouchListener(this);
-        setOnLongClickListener(this);
         consumer.start();
     }
 
     public DrawView(Context context, AttributeSet attrs) {
         super(context, attrs);
         setOnTouchListener(this);
-        setOnLongClickListener(this);
         consumer.start();
     }
 
     public DrawView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         setOnTouchListener(this);
-        setOnLongClickListener(this);
         consumer.start();
     }
     int count=0;
@@ -123,7 +119,7 @@ public class DrawView extends View implements View.OnTouchListener, View.OnLongC
         //Log.d("fingers","ontouch"+Integer.toString(++count));
 
 
-
+        float distance;
         switch (event.getActionMasked()) {
             case MotionEvent.ACTION_DOWN:
                 Log.d("fingers","down"+Integer.toString(count)+" x:" + event.getX()+", "+"y:"+event.getY());
@@ -135,13 +131,13 @@ public class DrawView extends View implements View.OnTouchListener, View.OnLongC
                 yActDown=event.getY();
                 int len = points.size();
 
+                // After redo and continue to draw, get rid of the useless point
                 for(int i = 0; i < points.size(); i++) {
                     if (points.get(i).getStepnumber()> currentStep) {
 
                         points.remove(i);
                         --len;
                         --i;
-
                         len = points.size();
                     }
                 }
@@ -159,9 +155,8 @@ public class DrawView extends View implements View.OnTouchListener, View.OnLongC
                 break;
             case MotionEvent.ACTION_MOVE:
                 fingers=event.getPointerCount();
-                float distance=0;
                 if(isSingleColor) {
-                    if (fingers == 1) {
+                    if (fingers == 1) { // In single finger mode, if the pointer only moves a little distance then this will not set move
                         distance = (event.getX() - xActDown) * (event.getX() - xActDown) + (event.getX() - xActDown) * (event.getX() - xActDown);
                         Log.d("distance", Float.toString(distance));
                         if (distance > 200) {
@@ -178,13 +173,6 @@ public class DrawView extends View implements View.OnTouchListener, View.OnLongC
                 }else {
                     isActMove=true;
                 }
-                //Log.d("myd","distance:"+Float.toString(distance)+","+Boolean.toString(isActMove));
-                //Log.d("fingers","move"+Integer.toString(fingers));
-/*
-                for(int i=0;i<fingers;i++){
-                    Log.d("fingers","move"+Integer.toString(count)+ " x:" + event.getX(i) + ", " + "y:" + event.getY(i));
-                    points.add(new MyPoint(event.getX(i),event.getY(i),radius,random.nextInt(),currentStep));
-                } */
 
                 if(israndom){
                     for(int i=0;i<fingers;i++){
@@ -197,9 +185,6 @@ public class DrawView extends View implements View.OnTouchListener, View.OnLongC
                         points.add(new MyPoint(event.getX(i),event.getY(i), radius, colorList[colorIndext], currentStep));
                     }
                 }
-/*                synchronized(myTime) {
-                    myTime.removeFirst();
-                }*/
                 invalidate();
                 break;
             case MotionEvent.ACTION_UP:
@@ -271,32 +256,24 @@ public class DrawView extends View implements View.OnTouchListener, View.OnLongC
 
     protected void onDraw(Canvas canvas) {
 
-        Paint paint = new Paint();
+
+
         for(MyPoint point: points){
             Log.d("fingers",Float.toString(point.x)+Float.toString(point.y));
             Log.d("points","number");
-            paint.setColor(point.color);
-            /*if(isLongPress && !isActMove){
-                paint.setColor(colorList[colorIndext]);
-            }*/
-            if(point.getStepnumber()<=currentStep){
+            paint.setColor(point.getColor());
+
+            if(point.getStepnumber()<=currentStep){ //for undo
                 canvas.drawCircle(point.x, point.y,point.radius+5, paint);
             }
 
         }
-            if(isLongPress && !isActMove){
+            if(isLongPress && !isActMove){ //for switching color when the pointer does not move for a second
                 paint.setColor(colorList[colorIndext]);
                 canvas.drawCircle(10, 10,50, paint);
             }
 
 
-    }
-
-    @Override
-    public boolean onLongClick(View v) {
-        //radius=50;
-        //invalidate();
-        return true;
     }
 
 
